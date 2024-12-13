@@ -18,10 +18,11 @@ public class Interpreter {
 			    case ',': input(); break;
 				case '[': startBranch(sourceIndex); break;
 				case ']': sourceIndex = endBranch(sourceIndex); break;
+				default: throw new IOException("Unexpected character at: " + sourceIndex + " '" + sourceCode.charAt(sourceIndex) + "'");
 			}
 		}
 		if (!bracketQueue.isEmpty()) { throw new IOException("Branch mismatch: No ']' available at pointer " + pointer); }
-		System.exit(1);
+		System.exit(0);
 	}
 
 	// instructions: + -
