@@ -15,22 +15,21 @@ public class Parser {
 			default: displayError("unrecognized option", args[0]); break;
 			case "-h": displayHelp(); break;
 			case "--help": displayHelp(); break;
-			case "-s": Interpreter.run(readString(args)); break;
+			case "-s":
+				if (args.length == 1) { displayError("no code provided", "-s ..."); }
+				Interpreter.run(readString(args)); break;
 			case "-f":
-				if (args[1].isEmpty()) { displayError("file name not provided", "-f ..."); }
-				try {
-					String fileContents = readFile(args[1]);
-					System.out.println(fileContents);
-				} catch (IOException e) {
-					throw new RuntimeException(e);
-				} break;
+				if (args.length == 1) { displayError("file name not provided", "-f ..."); }
+				if (args.length > 2) { displayError("too many arguments!", "-f " + Arrays.toString(args)); }
+				try { Interpreter.run(readFile(args[1])); }
+				catch (IOException e) { throw new RuntimeException(e); } break;
 		}
 	}
 
 	private static String readString(String[] args) {
         return Arrays.stream(args)
             .map(line -> {
-                String sanitizedLine = line.split("[#;/']")[0]; // Discards comments
+                String sanitizedLine = line.split("[#;/\"]")[0]; // Discards comments
                 return sanitizedLine.replaceAll("\\s+", ""); // The \\s+ regex strips whitespace
             }).collect(Collectors.joining())
 		    .substring(2); // I'm removing 2 characters here because I'm an idiot, and forgot the "-s" flag is part of the args, whoops
@@ -39,10 +38,9 @@ public class Parser {
 	private static String readFile(String pathInput) throws IOException {
 		Path filePath = Paths.get(pathInput);
 		if (!Files.exists(filePath)) { throw new IOException("File not found: " + pathInput); }
-
 		try (Stream<String> lines = Files.lines(filePath)) {
 			return lines.map(line -> {
-				String sanitizedLine = line.split("[#;/']")[0]; // Discards comments
+				String sanitizedLine = line.split("[#;/\"]")[0]; // Discards comments
 				return sanitizedLine.replaceAll("\\s+", ""); // The \\s+ regex strips whitespace
 			}).collect(Collectors.joining());
 		}

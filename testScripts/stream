@@ -1,0 +1,8 @@
+++++++[->++++++<]>---- 	# c1 = 32
+<,			# c0 = inp
+>			# *c1
+[<+>>+<-]<		# c0 = (inp + 32); c1 = 0; c2 = 32; *c0
+>[<<.->>-].		# out = c0-- until 32
+
+# im pretty sure i fucked this up lol
+# whoops
